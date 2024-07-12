@@ -8,8 +8,6 @@ public class Player : MonoBehaviour {
 
     private Rigidbody2D m_rigidBody;
 
-
-
     private void Awake() {
         m_rigidBody = GetComponent<Rigidbody2D>();
 
