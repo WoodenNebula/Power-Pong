@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public static class SceneLoader {
     private static Action onLoaderCallback;
+    public static bool IsInGameWorld {get; set;}
 
     public enum Scenes {
         Title_Screen = 0,
@@ -16,6 +17,13 @@ public static class SceneLoader {
         onLoaderCallback = () => {
             SceneManager.LoadScene((int)scene);
         };
+
+        if (scene == Scenes.Game_World) {
+            IsInGameWorld = true;
+        } 
+        else {
+            IsInGameWorld = false;
+        }
 
         SceneManager.LoadScene((int)Scenes.Loading_Screen);
     }

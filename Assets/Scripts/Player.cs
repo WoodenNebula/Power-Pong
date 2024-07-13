@@ -25,7 +25,7 @@ public class Player : MonoBehaviour {
 
 
     private void FixedUpdate() {
-        if (GameManager.IsPlaying)
+        if (GameManager.IsPlaying && !GameManager.IsPaused)
             HandleMovementInput();
     }
 

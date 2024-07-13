@@ -1,9 +1,12 @@
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
-    public static GameManager Instance { get; private set; }
+    [HideInInspector] public static GameManager Instance { get; private set; }
 
-    [HideInInspector] public static bool IsPlaying { get; set; }
+    [HideInInspector] public static bool IsPlaying { get { return SceneLoader.IsInGameWorld; } }
     [HideInInspector] public static bool IsPaused { get; set; }
 
 
@@ -15,70 +18,60 @@ public class GameManager : MonoBehaviour {
     private void Start() {
         if (Instance == null) { Instance = this; }
         else { Destroy(gameObject); }
-        DontDestroyOnLoad(gameObject);
-        StartGame();
-    }
 
+        DontDestroyOnLoad(gameObject);
+    }
 
     private void Update() {
         if (Input.GetKeyDown(KeyCode.Escape)) {
-            if (IsPlaying) { PauseGame(); }
-            else if (!IsPlaying && IsPaused) { ResumeGame(); }
+            if (!IsPaused) {
+                Debug.Log("Paused!");
+                PauseGameUI();
+            }
+            else {
+                ResumeGameUI();
+            }
         }
     }
 
 
     public static void StartGame() {
-        IsPlaying = true;
-        UILoader.Initialize();
-
-
         SceneLoader.LoadScene(SceneLoader.Scenes.Game_World);
-
-        //UILoader.LoadUI(UILoader.UI.Player_HUD);
-        UILoader.LoadUI(UILoader.UI.Pause_Menu, false);
-        UILoader.LoadUI(UILoader.UI.Title_Screen, false);
-        UILoader.LoadUI(UILoader.UI.End_Game, false);
+        if(Time.timeScale < 1.0f)
+            Time.timeScale = 1.0f;
+        IsPaused = false;
     }
 
+    public static void PauseGameUI() {
+        PauseGame();
+        PauseMenu.Load();
+    }
+
+    public static void ResumeGameUI() {
+        ResumeGame();
+        PauseMenu.UnLoad();
+    }
 
     public static void PauseGame() {
-        IsPlaying = false;
         IsPaused = true;
-
-        Ball.Pause();
-
-        UILoader.LoadUI(UILoader.UI.Pause_Menu);
+        Time.timeScale = 0.0f;
     }
-
 
     public static void ResumeGame() {
-        IsPlaying = true;
         IsPaused = false;
-
-        Ball.Resume();
-        UILoader.LoadUI(UILoader.UI.Pause_Menu, false);
+        Time.timeScale = 1.0f;
     }
 
-
-    public void ExitToMenu() {
-        IsPlaying = false;
-        IsPaused = false;
-
-        UILoader.ResetUIElements();
-
+    public static void ExitToMenu() {
         SceneLoader.LoadScene(SceneLoader.Scenes.Title_Screen);
     }
 
     public static void QuitGame() {
+        Debug.Log("Quiting Game!");
         Application.Quit();
     }
 
-    public static void EndGame(Players winner) {
-        IsPlaying = false;
-        IsPaused = false;
-
-        UILoader.DeclareWinner(winner.ToString());
-        UILoader.LoadUI(UILoader.UI.End_Game);
+    public static void FinishGame(Players winner) {
+        EndGame.DeclareWinner(winner);
     }
 }

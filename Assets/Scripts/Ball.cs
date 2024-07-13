@@ -5,8 +5,6 @@ public class Ball : MonoBehaviour {
 
     [SerializeField] private float m_speed = 10.0f;
 
-
-    private static Vector2 s_pauseVelocity;
     private Rigidbody2D m_rigidbody;
 
     private void Awake() {
@@ -22,7 +20,7 @@ public class Ball : MonoBehaviour {
         m_rigidbody.velocity.Normalize();
     }
 
-    
+
     private void OnCollisionExit2D(Collision2D collision) {
         var paddle = collision.collider.attachedRigidbody;
 
@@ -53,16 +51,8 @@ public class Ball : MonoBehaviour {
         foreach (Player p in players) {
             p.Halt();
         }
-        GameManager.EndGame(winner);
+
+        GameManager.FinishGame(winner);
     }
 
-
-    public static void Pause() {
-        s_pauseVelocity = Instance.m_rigidbody.velocity;
-        Instance.m_rigidbody.velocity = Vector2.zero;
-    }
-
-    public static void Resume() {
-        Instance.m_rigidbody.velocity = s_pauseVelocity;
-    }
 }
