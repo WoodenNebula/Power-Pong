@@ -7,7 +7,6 @@ public class PauseMenu : MonoBehaviour {
 
     private static GameObject s_pauseMenuUI;
 
-
     private static GameObject s_resumeButton;
     private static GameObject s_exitToMenuButton;
 
@@ -22,8 +21,7 @@ public class PauseMenu : MonoBehaviour {
         Button resumeButton = s_resumeButton.GetComponentInChildren<Button>();
         resumeButton.onClick.AddListener(() => {
             Debug.Log("Clicked Resume");
-            GameManager.ResumeGame();
-            PauseMenu.Load();
+            ButtonFunctions.Resume();
         });
 
         s_exitToMenuButton = GameObject.Find("ExitToMenuButton");
@@ -46,9 +44,5 @@ public class PauseMenu : MonoBehaviour {
     public static void RemoveListeners() {
         s_resumeButton.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
         s_exitToMenuButton.GetComponentInChildren<Button>().onClick.RemoveAllListeners();
-    }
-
-    private void OnDestroy() {
-        s_pauseMenuUI.SetActive(false);
     }
 }

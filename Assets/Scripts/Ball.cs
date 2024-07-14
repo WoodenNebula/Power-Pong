@@ -32,8 +32,8 @@ public class Ball : MonoBehaviour {
             vel.Normalize();
 
             // Clip the ball's direction by clipping its y-speed
-            if (Mathf.Abs(vel.y) > 0.7f)
-                vel.y = Mathf.Sign(vel.y) * 0.5f;
+            //if (Mathf.Abs(vel.y) > 0.7f)
+                //vel.y = Mathf.Sign(vel.y) * 0.5f;
 
             m_rigidbody.velocity = vel * m_speed;
         }
@@ -47,11 +47,8 @@ public class Ball : MonoBehaviour {
             winner = GameManager.Players.Two;
 
         Destroy(gameObject, 1.0f);
-        Player[] players = FindObjectsOfType<Player>();
-        foreach (Player p in players) {
-            p.Halt();
-        }
 
+        
         GameManager.FinishGame(winner);
     }
 

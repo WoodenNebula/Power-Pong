@@ -1,7 +1,7 @@
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-    [SerializeField] private int m_playerID;
+    public GameManager.Players PlayerID {  get; private set; }
 
     [SerializeField] private float m_speed = 15f;
     [SerializeField] private float m_lengthScale = 1f;
@@ -12,10 +12,10 @@ public class Player : MonoBehaviour {
         m_rigidBody = GetComponent<Rigidbody2D>();
 
         if (gameObject.name == "PlayerA") {
-            m_playerID = 0;
+            PlayerID = GameManager.Players.One;
         }
         else {
-            m_playerID = 1;
+            PlayerID = GameManager.Players.Two;
         }
 
         Vector3 scale = transform.localScale;
@@ -32,12 +32,12 @@ public class Player : MonoBehaviour {
 
     private void HandleMovementInput() {
         int verticalMovement = 0;
-        if (m_playerID == 0) {
+        if (PlayerID == GameManager.Players.One) {
             if (Input.GetKey(KeyCode.W)) { verticalMovement = 1; }
             else if (Input.GetKey(KeyCode.S)) { verticalMovement = -1; }
 
         }
-        else if (m_playerID == 1) {
+        else if (PlayerID == GameManager.Players.Two) {
             if (Input.GetKey(KeyCode.UpArrow)) { verticalMovement = 1; }
             else if (Input.GetKey(KeyCode.DownArrow)) { verticalMovement = -1; }
         }
@@ -52,10 +52,5 @@ public class Player : MonoBehaviour {
         Vector2 vel = m_rigidBody.velocity;
         vel.Normalize();
         return vel;
-    }
-
-
-    public void Halt() {
-        m_rigidBody.velocity = Vector2.zero;
     }
 }

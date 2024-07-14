@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
 
     [HideInInspector] public static bool IsPlaying { get { return SceneLoader.IsInGameWorld; } }
     [HideInInspector] public static bool IsPaused { get; set; }
+    [HideInInspector] public static bool IsGameOver { get; set; }
 
 
     public enum Players {
@@ -23,12 +24,13 @@ public class GameManager : MonoBehaviour {
     }
 
     private void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape)) {
+        if (Input.GetKeyDown(KeyCode.Escape) && !IsGameOver) {
             if (!IsPaused) {
                 Debug.Log("Paused!");
                 PauseGameUI();
             }
             else {
+                Debug.Log("Unpaused!");
                 ResumeGameUI();
             }
         }
@@ -36,8 +38,9 @@ public class GameManager : MonoBehaviour {
 
 
     public static void StartGame() {
+        IsGameOver = false;
         SceneLoader.LoadScene(SceneLoader.Scenes.Game_World);
-        if(Time.timeScale < 1.0f)
+        if (Time.timeScale < 1.0f)
             Time.timeScale = 1.0f;
         IsPaused = false;
     }
@@ -72,6 +75,20 @@ public class GameManager : MonoBehaviour {
     }
 
     public static void FinishGame(Players winner) {
+        IsGameOver = true;
+        PauseGame();
+        Ball b = FindObjectOfType<Ball>();
+        if (b != null)
+            b.GetComponent<SpriteRenderer>().color = Color.red;
+
+
+        Player[] players = FindObjectsOfType<Player>();
+        foreach (Player p in players) {
+            if (winner == p.PlayerID) {
+                p.GetComponent<SpriteRenderer>().color = Color.yellow;
+            }
+        }
+
         EndGame.DeclareWinner(winner);
     }
 }

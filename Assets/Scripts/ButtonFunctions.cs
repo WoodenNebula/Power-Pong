@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class ButtonFunctions : MonoBehaviour
@@ -8,11 +6,11 @@ public class ButtonFunctions : MonoBehaviour
         GameManager.StartGame();
     }
 
-    public static void PauseGame() {
+    public static void Pause() {
         GameManager.PauseGameUI();
     }
 
-    public static void ResumeGame() {
+    public static void Resume() {
         GameManager.ResumeGameUI();
     }
 
@@ -24,7 +22,7 @@ public class ButtonFunctions : MonoBehaviour
         GameManager.ExitToMenu();
     }
 
-    public static void QuitGame() {
+    public static void Quit() {
         GameManager.QuitGame();
     }
 }

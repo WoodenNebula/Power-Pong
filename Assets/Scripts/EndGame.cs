@@ -45,9 +45,4 @@ public class EndGame : MonoBehaviour {
 
         s_endGameUI.SetActive(true);
     }
-
-    private void OnDestroy() {
-        s_endGameUI.SetActive(false);
-    }
-
 }
