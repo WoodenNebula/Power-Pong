@@ -1,14 +1,14 @@
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-    public GameManager.Players PlayerID {  get; private set; }
+    public GameManager.Players PlayerID {  get; set; }
 
-    [SerializeField] private float m_speed = 15f;
-    [SerializeField] private float m_lengthScale = 1f;
+    [SerializeField] float m_speed = 15f;
+    [SerializeField] float m_lengthScale = 1f;
 
-    private Rigidbody2D m_rigidBody;
+    Rigidbody2D m_rigidBody;
 
-    private void Awake() {
+    void Awake() {
         m_rigidBody = GetComponent<Rigidbody2D>();
 
         if (gameObject.name == "PlayerA") {
@@ -24,13 +24,13 @@ public class Player : MonoBehaviour {
     }
 
 
-    private void FixedUpdate() {
+    void FixedUpdate() {
         if (GameManager.IsPlaying && !GameManager.IsPaused)
             HandleMovementInput();
     }
 
 
-    private void HandleMovementInput() {
+    void HandleMovementInput() {
         int verticalMovement = 0;
         if (PlayerID == GameManager.Players.One) {
             if (Input.GetKey(KeyCode.W)) { verticalMovement = 1; }

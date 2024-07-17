@@ -1,21 +1,18 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class EndGame : MonoBehaviour {
-    private static EndGame Instance { get; set; }
+    static EndGame Instance { get; set; }
 
-    private static GameObject s_endGameUI;
-    private static TextMeshProUGUI s_winnerDeclareText;
+    static GameObject s_endGameUI;
+    static TextMeshProUGUI s_winnerDeclareText;
 
-    private static GameObject s_playAgainButton;
-    private static GameObject s_exitToMenuButton;
+    static GameObject s_playAgainButton;
+    static GameObject s_exitToMenuButton;
 
-    private void Start() {
+    void Start() {
         s_endGameUI = GameObject.Find("EndGameUI");
 
         s_endGameUI.transform.Find("Canvas").gameObject.SetActive(true);

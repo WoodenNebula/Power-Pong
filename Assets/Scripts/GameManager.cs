@@ -1,10 +1,7 @@
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour {
-    [HideInInspector] public static GameManager Instance { get; private set; }
+    [HideInInspector] public static GameManager Instance { get; set; }
 
     [HideInInspector] public static bool IsPlaying { get { return SceneLoader.IsInGameWorld; } }
     [HideInInspector] public static bool IsPaused { get; set; }
@@ -16,14 +13,14 @@ public class GameManager : MonoBehaviour {
     }
 
 
-    private void Start() {
+    void Start() {
         if (Instance == null) { Instance = this; }
         else { Destroy(gameObject); }
 
         DontDestroyOnLoad(gameObject);
     }
 
-    private void Update() {
+    void Update() {
         if (Input.GetKeyDown(KeyCode.Escape) && !IsGameOver) {
             if (!IsPaused) {
                 Debug.Log("Paused!");

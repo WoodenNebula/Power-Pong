@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 
 public static class SceneLoader {
-    private static Action onLoaderCallback;
+    static Action onLoaderCallback;
     public static bool IsInGameWorld {get; set;}
 
     public enum Scenes {

@@ -1,13 +1,13 @@
 using UnityEngine;
 
 public class Ball : MonoBehaviour {
-    [HideInInspector] public static Ball Instance { get; private set; }
+    [HideInInspector] public static Ball Instance { get; set; }
 
-    [SerializeField] private float m_speed = 10.0f;
+    [SerializeField] float m_speed = 10.0f;
 
-    private Rigidbody2D m_rigidbody;
+    Rigidbody2D m_rigidbody;
 
-    private void Awake() {
+    void Awake() {
         if (Instance == null) { Instance = this; }
         //else { Destroy(gameObject); }
 
@@ -16,12 +16,12 @@ public class Ball : MonoBehaviour {
         m_rigidbody.velocity = Vector2.left * m_speed;
     }
 
-    private void FixedUpdate() {
+    void FixedUpdate() {
         m_rigidbody.velocity.Normalize();
     }
 
 
-    private void OnCollisionExit2D(Collision2D collision) {
+    void OnCollisionExit2D(Collision2D collision) {
         var paddle = collision.collider.attachedRigidbody;
 
         if (paddle == null)
@@ -39,7 +39,11 @@ public class Ball : MonoBehaviour {
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D collision) {
+    void OnTriggerEnter(Collider other) {
+        
+    }
+
+    void OnTriggerEnter2D(Collider2D collision) {
         GameManager.Players winner;
         if (m_rigidbody.velocity.x > 0f)
             winner = GameManager.Players.One;

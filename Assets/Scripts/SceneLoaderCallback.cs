@@ -1,9 +1,9 @@
 using UnityEngine;
 
 public class SceneLoaderCallback : MonoBehaviour {
-    private bool isFirstUpdate = true;
+    bool isFirstUpdate = true;
 
-    private void Update() {
+    void Update() {
         if (isFirstUpdate) {
             isFirstUpdate = false;
             SceneLoader.LoaderCallback();
