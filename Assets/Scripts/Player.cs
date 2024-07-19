@@ -6,6 +6,7 @@ public class Player : MonoBehaviour {
     [SerializeField] float m_speed = 15f;
     [SerializeField] float m_lengthScale = 1f;
 
+    AudioSource m_audioSource;
     Rigidbody2D m_rigidBody;
 
     void Awake() {
@@ -17,6 +18,9 @@ public class Player : MonoBehaviour {
         else {
             PlayerID = GameManager.Players.Two;
         }
+
+
+        m_audioSource = GetComponent<AudioSource>();
 
         Vector3 scale = transform.localScale;
         scale.y *= m_lengthScale;
@@ -47,6 +51,12 @@ public class Player : MonoBehaviour {
         else { m_rigidBody.velocity = transform.up * (verticalMovement * m_speed * Time.fixedDeltaTime); }
     }
 
+
+    void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.collider.gameObject.name == "Ball") {
+            m_audioSource.Play();
+        }
+    }
 
     public Vector2 GetVelocityDir() {
         Vector2 vel = m_rigidBody.velocity;

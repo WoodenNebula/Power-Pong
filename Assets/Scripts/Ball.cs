@@ -6,10 +6,13 @@ public class Ball : MonoBehaviour {
     [SerializeField] float m_speed = 10.0f;
 
     Rigidbody2D m_rigidbody;
+    AudioSource m_audioSource;
 
     void Awake() {
         if (Instance == null) { Instance = this; }
         //else { Destroy(gameObject); }
+
+        m_audioSource = GetComponent<AudioSource>();
 
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_rigidbody.inertia = 0;
@@ -20,6 +23,13 @@ public class Ball : MonoBehaviour {
         m_rigidbody.velocity.Normalize();
     }
 
+
+    void OnCollisionEnter2D(Collision2D collision) {
+        // If collision is with walls
+        if (collision.collider.attachedRigidbody == null) {
+            m_audioSource.Play();
+        }
+    }
 
     void OnCollisionExit2D(Collision2D collision) {
         var paddle = collision.collider.attachedRigidbody;
@@ -39,10 +49,6 @@ public class Ball : MonoBehaviour {
         }
     }
 
-    void OnTriggerEnter(Collider other) {
-        
-    }
-
     void OnTriggerEnter2D(Collider2D collision) {
         GameManager.Players winner;
         if (m_rigidbody.velocity.x > 0f)
@@ -52,7 +58,6 @@ public class Ball : MonoBehaviour {
 
         Destroy(gameObject, 1.0f);
 
-        
         GameManager.FinishGame(winner);
     }
 

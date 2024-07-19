@@ -5,10 +5,12 @@ using UnityEngine.UI;
 public class PauseMenu : MonoBehaviour {
     public static PauseMenu Instance { get; set; }
 
+    #region Static Fields
     static GameObject s_pauseMenuUI;
 
     static GameObject s_resumeButton;
     static GameObject s_exitToMenuButton;
+    #endregion Static Fields
 
     void Start() {
         if (Instance == null) { Instance = this; }

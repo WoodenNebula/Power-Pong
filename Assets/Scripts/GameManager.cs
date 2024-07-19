@@ -3,15 +3,15 @@ using UnityEngine;
 public class GameManager : MonoBehaviour {
     [HideInInspector] public static GameManager Instance { get; set; }
 
+    #region Game Properties
     [HideInInspector] public static bool IsPlaying { get { return SceneLoader.IsInGameWorld; } }
     [HideInInspector] public static bool IsPaused { get; set; }
     [HideInInspector] public static bool IsGameOver { get; set; }
 
-
     public enum Players {
         One = 1, Two
     }
-
+    #endregion Game Properties
 
     void Start() {
         if (Instance == null) { Instance = this; }
