@@ -1,12 +1,18 @@
 using UnityEngine;
 
 public class Ball : MonoBehaviour {
-    [HideInInspector] public static Ball Instance { get; set; }
-
     [SerializeField] float m_speed = 10.0f;
+
+    [HideInInspector] public static Ball Instance { get; set; }
 
     Rigidbody2D m_rigidbody;
     AudioSource m_audioSource;
+
+    public Vector2 Velocity {
+        get { return m_rigidbody.velocity; }
+        set { m_rigidbody.velocity = value; }
+    }
+
 
     void Awake() {
         if (Instance == null) { Instance = this; }
@@ -16,11 +22,11 @@ public class Ball : MonoBehaviour {
 
         m_rigidbody = GetComponent<Rigidbody2D>();
         m_rigidbody.inertia = 0;
-        m_rigidbody.velocity = Vector2.left * m_speed;
+        Velocity = Vector2.left * m_speed;
     }
 
     void FixedUpdate() {
-        m_rigidbody.velocity.Normalize();
+        Velocity.Normalize();
     }
 
 
@@ -37,21 +43,24 @@ public class Ball : MonoBehaviour {
         if (paddle == null)
             return;
 
-        if (paddle.velocity != Vector2.zero) {
-            Vector2 vel = paddle.velocity + m_rigidbody.velocity;
-            vel.Normalize();
-
-            // Clip the ball's direction by clipping its y-speed
-            //if (Mathf.Abs(vel.y) > 0.7f)
-                //vel.y = Mathf.Sign(vel.y) * 0.5f;
-
-            m_rigidbody.velocity = vel * m_speed;
+        if (paddle.velocity.Equals(Vector2.zero)) {
+            return;
         }
+
+
+        Vector2 vel = paddle.velocity.normalized + Velocity.normalized;
+        vel.Normalize();
+
+        float angle = Mathf.Atan2(vel.y, vel.x);
+        Debug.Log("Current Angle: " + angle);
+        // Clip the ball's direction by clipping its y-speed
+
+        Velocity = vel * m_speed;
     }
 
     void OnTriggerEnter2D(Collider2D collision) {
         GameManager.Players winner;
-        if (m_rigidbody.velocity.x > 0f)
+        if (Velocity.x > 0f)
             winner = GameManager.Players.One;
         else
             winner = GameManager.Players.Two;
@@ -61,4 +70,8 @@ public class Ball : MonoBehaviour {
         GameManager.FinishGame(winner);
     }
 
+
+    public void NormalizeBallVelocity() {
+        Velocity *= m_speed;
+    }
 }
