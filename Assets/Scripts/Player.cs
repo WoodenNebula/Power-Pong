@@ -1,13 +1,16 @@
 using UnityEngine;
 
 public class Player : MonoBehaviour {
-    public GameManager.Players PlayerID {  get; set; }
+    public GameManager.Players PlayerID { get; private set; }
 
     [SerializeField] float m_speed = 15f;
     [SerializeField] float m_lengthScale = 1f;
 
     AudioSource m_audioSource;
     Rigidbody2D m_rigidBody;
+
+
+    IAbility warpAbility;
 
     void Awake() {
         m_rigidBody = GetComponent<Rigidbody2D>();
@@ -20,6 +23,8 @@ public class Player : MonoBehaviour {
         }
 
 
+        warpAbility = new WarpBall(this);
+
         m_audioSource = GetComponent<AudioSource>();
 
         Vector3 scale = transform.localScale;
@@ -28,9 +33,30 @@ public class Player : MonoBehaviour {
     }
 
 
-    void FixedUpdate() {
+    void Update() {
         if (GameManager.IsPlaying && !GameManager.IsPaused)
+            HandleAbilityInput();
+    }
+
+    void FixedUpdate() {
+        if (GameManager.IsPlaying && !GameManager.IsPaused) 
             HandleMovementInput();
+    }
+
+
+    void HandleAbilityInput() {
+        if (PlayerID == GameManager.Players.One) {
+            if (Input.GetKeyDown(KeyCode.D)) {
+                Debug.Log("Ability Called by One");
+                warpAbility.Use();
+            }
+        }
+        else if (PlayerID == GameManager.Players.Two) {
+            if (Input.GetKeyDown(KeyCode.RightShift)) {
+                Debug.Log("Ability Called by Two");
+                warpAbility.Use();
+            }
+        }
     }
 
 
@@ -39,7 +65,6 @@ public class Player : MonoBehaviour {
         if (PlayerID == GameManager.Players.One) {
             if (Input.GetKey(KeyCode.W)) { verticalMovement = 1; }
             else if (Input.GetKey(KeyCode.S)) { verticalMovement = -1; }
-
         }
         else if (PlayerID == GameManager.Players.Two) {
             if (Input.GetKey(KeyCode.UpArrow)) { verticalMovement = 1; }
