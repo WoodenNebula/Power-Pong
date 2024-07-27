@@ -2,8 +2,7 @@ using UnityEngine;
 
 public class ButtonFunctions : MonoBehaviour
 {
-
-    static ButtonFunctions Instance;
+    public static ButtonFunctions Instance;
     AudioSource m_audioSource;
 
     void Awake() {
@@ -17,6 +16,11 @@ public class ButtonFunctions : MonoBehaviour
 
     static void PlayAudio() {
         Instance.m_audioSource.Play();
+    }
+
+    static void NextRound() {
+        PlayAudio();
+        GameManager.ResetRound();
     }
 
 

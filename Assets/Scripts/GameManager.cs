@@ -1,27 +1,69 @@
+using System;
 using UnityEngine;
+
+public interface IResetAble {
+    public void Reset();
+}
 
 public class GameManager : MonoBehaviour {
     [HideInInspector] public static GameManager Instance { get; set; }
 
+    static public readonly int ROUNDS_PER_GAME = 3;
+    static public readonly int NUM_PLAYERS = 2;
+
+    IResetAble m_ball;
+    IResetAble[] m_players;
+
+
     #region Game Properties
-    [HideInInspector] public static bool IsPlaying { get { return SceneLoader.IsInGameWorld; } }
+    //[HideInInspector] public static int CurrentRound { get; set; } = 0;
     [HideInInspector] public static bool IsPaused { get; set; }
-    [HideInInspector] public static bool IsGameOver { get; set; }
+    [HideInInspector] public static bool IsRecentlyLoaded { get; set; }
+    static bool s_r;
+    [HideInInspector] public static bool IsResumeAble { get => s_r; set { Debug.Log("Set IsResumeAble " + value); s_r = value; } }
+    [HideInInspector] public static bool IsPlayerControllable { get; private set; }
+    [HideInInspector]
+    public static bool IsGameOver {
+        get {
+            return ((PlayerWins[0] == ROUNDS_PER_GAME) ||
+                (PlayerWins[1] == ROUNDS_PER_GAME));
+        }
+    }
+
+    [HideInInspector] public static int[] PlayerWins = { 0, 0 };
 
     public enum Players {
-        One = 1, Two
+        None = -1, One = 0, Two
     }
+
     #endregion Game Properties
 
+
     void Start() {
-        if (Instance == null) { Instance = this; }
+        Debug.Log("Starting Game Manager!");
+
+        if (Instance == null) {
+            Instance = this;
+        }
         else { Destroy(gameObject); }
 
         DontDestroyOnLoad(gameObject);
+
+        IsResumeAble = true;
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Escape) && !IsGameOver) {
+        if (IsRecentlyLoaded) {
+            Debug.Log("Recently Loaded!");
+            if (Input.GetKeyDown(KeyCode.Escape)) {
+                IsRecentlyLoaded = false;
+                RoundStart.EnableUI(false);
+                ResumeGame();
+                return;
+            }
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Escape) && IsResumeAble) {
             if (!IsPaused) {
                 Debug.Log("Paused!");
                 PauseGameUI();
@@ -35,14 +77,24 @@ public class GameManager : MonoBehaviour {
 
 
     public static void StartGame() {
-        IsGameOver = false;
+        // Reset Rounds
+        Debug.Log("Starting Game!");
+
+        PlayerWins[0] = 0;
+        PlayerWins[1] = 0;
+        Instance.m_players = new IResetAble[PlayerWins.Length];
+
         SceneLoader.LoadScene(SceneLoader.Scenes.Game_World);
-        if (Time.timeScale < 1.0f)
-            Time.timeScale = 1.0f;
-        IsPaused = false;
+
+        IsPlayerControllable = false;
+        IsRecentlyLoaded = true;
+
+        PauseGame();
     }
 
     public static void PauseGameUI() {
+        IsResumeAble = true;
+
         PauseGame();
         PauseMenu.Load();
     }
@@ -54,38 +106,109 @@ public class GameManager : MonoBehaviour {
 
     public static void PauseGame() {
         IsPaused = true;
+        IsPlayerControllable = false;
         Time.timeScale = 0.0f;
     }
 
     public static void ResumeGame() {
         IsPaused = false;
+        IsPlayerControllable = true;
         Time.timeScale = 1.0f;
     }
 
     public static void ExitToMenu() {
+        IsResumeAble = false;
+        IsPlayerControllable = false;
         SceneLoader.LoadScene(SceneLoader.Scenes.Title_Screen);
     }
 
     public static void QuitGame() {
         Debug.Log("Quiting Game!");
+        Destroy(Instance);
         Application.Quit();
     }
 
-    public static void FinishGame(Players winner) {
-        IsGameOver = true;
+    public static void SubmitBall(IResetAble ball) {
+        Instance.m_ball = ball;
+    }
+
+    public static void SubmitPlayer(IResetAble player) {
+        if (Instance.m_players == null) {
+            Instance.m_players = new IResetAble[NUM_PLAYERS];
+        }
+
+        if (Instance.m_players[0] == null) {
+            Instance.m_players[0] = player;
+        }
+        else if (Instance.m_players[1] == null) {
+            Instance.m_players[1] = player;
+        }
+    }
+
+
+    public static void ResetRound() {
+        IsResumeAble = true;
+
+        IsPlayerControllable = false;
+
+        for (int i = 0; i < NUM_PLAYERS; i++) {
+            if (Instance.m_players[i] != null) {
+                Instance.m_players[i].Reset();
+            }
+        }
+
+        Instance.m_ball.Reset();
+        IsRecentlyLoaded = true;
+        RoundStart.EnableUI();
+    }
+
+    public static void FinishRound(Players winner) {
+        IsResumeAble = false;
         PauseGame();
-        Ball b = FindObjectOfType<Ball>();
-        if (b != null)
-            b.GetComponent<SpriteRenderer>().color = Color.red;
+
+        //CurrentRound++;
+
+        ColorPlayer(winner);
+
+        if (winner == Players.One) {
+            PlayerWins[(int)Players.One]++;
+        }
+        else if (winner == Players.Two) {
+            PlayerWins[(int)Players.Two]++;
+        }
+        PlayerHUD.UpdateWinCount();
+
+        if (IsGameOver) {
+            FinishGame();
+        } 
+        else {
+            RoundEnd.DeclareWinner(winner);
+        }
+    }
 
 
-        Player[] players = FindObjectsOfType<Player>();
-        foreach (Player p in players) {
+    public static void FinishGame() {
+        if (!IsGameOver)
+            return;
+        Players winner = Players.None;
+        // Find Winner
+        if (PlayerWins[(int)Players.One] == ROUNDS_PER_GAME)
+            winner = Players.One;
+        else if (PlayerWins[(int)Players.Two] == ROUNDS_PER_GAME)
+            winner = Players.Two;
+
+        ColorPlayer(winner);
+
+        // Load the winner declaration UI
+        EndGame.DeclareWinner(winner);
+    }
+
+    public static void ColorPlayer(Players winner) {
+        // Highlight Winner
+        foreach (Player p in FindObjectsOfType<Player>()) {
             if (winner == p.PlayerID) {
                 p.GetComponent<SpriteRenderer>().color = Color.yellow;
             }
         }
-
-        EndGame.DeclareWinner(winner);
     }
 }

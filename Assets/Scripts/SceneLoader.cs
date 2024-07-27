@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 
 
 public static class SceneLoader {
-    static Action onLoaderCallback;
+    public static Action onLoaderCallback;
     public static bool IsInGameWorld {get; set;}
 
     public enum Scenes {
@@ -18,12 +18,7 @@ public static class SceneLoader {
             SceneManager.LoadScene((int)scene);
         };
 
-        if (scene == Scenes.Game_World) {
-            IsInGameWorld = true;
-        } 
-        else {
-            IsInGameWorld = false;
-        }
+        IsInGameWorld = (scene == Scenes.Game_World);
 
         SceneManager.LoadScene((int)Scenes.Loading_Screen);
     }

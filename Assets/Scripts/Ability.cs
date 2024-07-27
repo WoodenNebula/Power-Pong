@@ -1,11 +1,10 @@
 using UnityEngine;
 
-public interface IAbility {
+public interface IAbility: IResetAble {
     public int RemainingUsage { get; set; }
     public float Cooldown { get; set; }
 
     public void Use();
-    public void Reset();
 }
 
 public class WarpBall : IAbility {
@@ -33,25 +32,24 @@ public class WarpBall : IAbility {
         Ball ball = Ball.Instance;
 
         Debug.Log("Trying to use warp Ability");
-        Debug.Log("UsageRemaining: " + RemainingUsage + "Cooldown: " + Cooldown);
-        if (RemainingUsage <= 0 || Cooldown > 0.3f)
+        if (RemainingUsage <= 0 || Cooldown > 0.3f) {
+            PlayerHUD.UpdateAbilityDisplay(m_user.PlayerID, 0);
             return;
+        }
 
-        //float playerField = 0.0f;
         Vector3 abilityUserPos = m_user.transform.position;
 
         Vector3 ballPos = ball.transform.position;
 
         switch (m_user.PlayerID) {
             case GameManager.Players.One:
-                if (/*ballPos.x > playerField || */ball.Velocity.x < 0.0f)
+                if (ball.Velocity.x < 0.0f)
                     break;
 
-                Debug.Log("Warpped by Player Two");
                 // Play Ball warp out
                 ballPos.y = abilityUserPos.y;
                 ball.transform.position = ballPos;
-                
+
                 ball.Velocity = Vector2.right;
                 ball.NormalizeBallVelocity();
                 // Play Ball warp in
@@ -59,13 +57,12 @@ public class WarpBall : IAbility {
                 break;
 
             case GameManager.Players.Two:
-                if (/*ballPos.x < playerField || */ball.Velocity.x > 0.0f)
+                if (ball.Velocity.x > 0.0f)
                     break;
 
-                Debug.Log("Warpped by Player Two");
                 // Play Ball warp out
                 ballPos.y = abilityUserPos.y;
-                
+
                 ball.transform.position = ballPos;
 
                 ball.Velocity = Vector2.left;
@@ -74,6 +71,7 @@ public class WarpBall : IAbility {
                 RemainingUsage--;
                 break;
         }
+        PlayerHUD.UpdateAbilityDisplay(m_user.PlayerID, RemainingUsage);
     }
 
     public void Reset() {

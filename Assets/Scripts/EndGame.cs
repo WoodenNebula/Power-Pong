@@ -21,11 +21,11 @@ public class EndGame : MonoBehaviour {
 
         s_playAgainButton = GameObject.Find("PlayAgainButton");
         Button playAgainButton = s_playAgainButton.GetComponent<Button>();
-        playAgainButton.onClick.AddListener(() => { SceneLoader.LoadScene(SceneLoader.Scenes.Game_World); });
+        playAgainButton.onClick.AddListener(() => { ButtonFunctions.StartGame(); });
 
         s_exitToMenuButton = GameObject.Find("ExitToMenuButton");
         Button exitToMenuButton = s_exitToMenuButton.GetComponent<Button>();
-        exitToMenuButton.onClick.AddListener(() => { SceneLoader.LoadScene(SceneLoader.Scenes.Title_Screen); });
+        exitToMenuButton.onClick.AddListener(() => { ButtonFunctions.ExitToMenu(); });
 
         s_endGameUI.SetActive(false);
     }
@@ -34,9 +34,13 @@ public class EndGame : MonoBehaviour {
         GameManager.PauseGame();
         EventSystem.current.SetSelectedGameObject(s_playAgainButton, new BaseEventData(EventSystem.current));
 
-
         if (s_winnerDeclareText != null) {
-            s_winnerDeclareText.text = "Player " + winner.ToString() + " Won!";
+            if (winner == GameManager.Players.None) {
+                s_winnerDeclareText.text = "Draw!";
+            }
+            else {
+                s_winnerDeclareText.text = "Player " + winner.ToString() + " Won!";
+            }
         }
         else { Debug.LogError("WINNER IS NOT DETECTED"); }
 

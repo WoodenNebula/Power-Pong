@@ -1,46 +1,70 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class Player : MonoBehaviour {
+public class Player : MonoBehaviour, IResetAble {
     public GameManager.Players PlayerID { get; private set; }
 
     [SerializeField] float m_speed = 15f;
-    [SerializeField] float m_lengthScale = 1f;
 
     AudioSource m_audioSource;
     Rigidbody2D m_rigidBody;
 
 
-    IAbility warpAbility;
+    IAbility m_warpAbility;
 
     void Awake() {
-        m_rigidBody = GetComponent<Rigidbody2D>();
+        m_warpAbility = new WarpBall(this);
 
+        m_rigidBody = GetComponent<Rigidbody2D>();
+        m_audioSource = GetComponent<AudioSource>();
+    }
+
+
+    void Start() {
         if (gameObject.name == "PlayerA") {
             PlayerID = GameManager.Players.One;
+            GameManager.SubmitPlayer(this);
         }
         else {
             PlayerID = GameManager.Players.Two;
+            GameManager.SubmitPlayer(this);
         }
+        PlayerHUD.UpdateAbilityDisplay(PlayerID, m_warpAbility.RemainingUsage);
 
-
-        warpAbility = new WarpBall(this);
-
-        m_audioSource = GetComponent<AudioSource>();
-
-        Vector3 scale = transform.localScale;
-        scale.y *= m_lengthScale;
-        transform.localScale = scale;
+        Reset();
     }
 
 
     void Update() {
-        if (GameManager.IsPlaying && !GameManager.IsPaused)
+        if (GameManager.IsPlayerControllable && !GameManager.IsPaused)
             HandleAbilityInput();
     }
 
     void FixedUpdate() {
-        if (GameManager.IsPlaying && !GameManager.IsPaused) 
+        if (GameManager.IsPlayerControllable && !GameManager.IsPaused)
             HandleMovementInput();
+    }
+
+    void OnCollisionEnter2D(Collision2D collision) {
+        if (collision.collider.gameObject.name == "Ball") {
+            m_audioSource.Play();
+        }
+    }
+
+    void OnDestroy() {
+        Debug.Log("Destroyed!");
+    }
+
+
+    public void Reset() {
+        if (PlayerID == GameManager.Players.One) {
+            transform.position = new Vector3(-20.0f, 0.0f, 0.0f);
+        }
+        else if (PlayerID == GameManager.Players.Two) {
+            transform.position = new Vector3(20.0f, 0.0f, 0.0f);
+        }
+
+        gameObject.GetComponent<SpriteRenderer>().color = new Color(82/255.0f, 255/255.0f, 0/255.0f);
     }
 
 
@@ -48,17 +72,16 @@ public class Player : MonoBehaviour {
         if (PlayerID == GameManager.Players.One) {
             if (Input.GetKeyDown(KeyCode.D)) {
                 Debug.Log("Ability Called by One");
-                warpAbility.Use();
+                m_warpAbility.Use();
             }
         }
         else if (PlayerID == GameManager.Players.Two) {
             if (Input.GetKeyDown(KeyCode.RightShift)) {
                 Debug.Log("Ability Called by Two");
-                warpAbility.Use();
+                m_warpAbility.Use();
             }
         }
     }
-
 
     void HandleMovementInput() {
         int verticalMovement = 0;
@@ -77,15 +100,4 @@ public class Player : MonoBehaviour {
     }
 
 
-    void OnCollisionEnter2D(Collision2D collision) {
-        if (collision.collider.gameObject.name == "Ball") {
-            m_audioSource.Play();
-        }
-    }
-
-    public Vector2 GetVelocityDir() {
-        Vector2 vel = m_rigidBody.velocity;
-        vel.Normalize();
-        return vel;
-    }
 }

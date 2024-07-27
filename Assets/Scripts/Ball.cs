@@ -1,8 +1,9 @@
+using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
-public class Ball : MonoBehaviour {
+public class Ball : MonoBehaviour, IResetAble {
     [SerializeField] float m_speed = 10.0f;
-
     [HideInInspector] public static Ball Instance { get; set; }
 
     Rigidbody2D m_rigidbody;
@@ -15,14 +16,20 @@ public class Ball : MonoBehaviour {
 
 
     void Awake() {
-        if (Instance == null) { Instance = this; }
-        //else { Destroy(gameObject); }
-
         m_audioSource = GetComponent<AudioSource>();
-
         m_rigidbody = GetComponent<Rigidbody2D>();
+
         m_rigidbody.inertia = 0;
-        Velocity = Vector2.left * m_speed;
+    }
+
+    void Start() {
+        if (Instance == null) { 
+            Instance = this;
+            GameManager.SubmitBall(Instance);
+        }
+        else { Destroy(gameObject); }
+
+        Reset();
     }
 
     void FixedUpdate() {
@@ -52,7 +59,7 @@ public class Ball : MonoBehaviour {
         vel.Normalize();
 
         float angle = Mathf.Atan2(vel.y, vel.x);
-        Debug.Log("Current Angle: " + angle);
+        //Debug.Log("Current Angle: " + angle);
         // Clip the ball's direction by clipping its y-speed
 
         Velocity = vel * m_speed;
@@ -65,11 +72,22 @@ public class Ball : MonoBehaviour {
         else
             winner = GameManager.Players.Two;
 
-        Destroy(gameObject, 1.0f);
-
-        GameManager.FinishGame(winner);
+        gameObject.GetComponent<SpriteRenderer>().color = Color.red;
+        GameManager.FinishRound(winner);
     }
 
+    public void Reset() {
+        float y = Random.Range(-1.0f, 1.0f);
+        int x = (y < 0.0f) ? 1 : -1;
+
+        Vector2 vel = new Vector2(x, y);
+        vel.Normalize();
+
+        Velocity = vel * m_speed;
+
+        transform.position = new Vector3(0.0f, 0.0f, 0.0f);
+        gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+    }
 
     public void NormalizeBallVelocity() {
         Velocity *= m_speed;
