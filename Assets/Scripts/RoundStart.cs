@@ -15,7 +15,6 @@ public class RoundStart : MonoBehaviour {
     }
 
     public static void EnableUI(bool shouldEnable = true) {
-        Debug.Log("Should Start enable = " + shouldEnable);
         if (!shouldEnable) {
             Instance.m_infoText.text = "<s>PRESS ESC TO START</s>";
         } else {

@@ -1,10 +1,12 @@
-using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 public class Ball : MonoBehaviour, IResetAble {
-    [SerializeField] float m_speed = 10.0f;
     [HideInInspector] public static Ball Instance { get; set; }
+
+    [SerializeField] public Animator Animator;
+
+    [SerializeField] float m_speed = 10.0f;
+    [SerializeField] AudioClip m_clash, m_ballOut;
 
     Rigidbody2D m_rigidbody;
     AudioSource m_audioSource;
@@ -40,6 +42,7 @@ public class Ball : MonoBehaviour, IResetAble {
     void OnCollisionEnter2D(Collision2D collision) {
         // If collision is with walls
         if (collision.collider.attachedRigidbody == null) {
+            m_audioSource.clip = m_clash;
             m_audioSource.Play();
         }
     }
@@ -66,6 +69,9 @@ public class Ball : MonoBehaviour, IResetAble {
     }
 
     void OnTriggerEnter2D(Collider2D collision) {
+        m_audioSource.clip = m_ballOut;
+        m_audioSource.Play();
+
         GameManager.Players winner;
         if (Velocity.x > 0f)
             winner = GameManager.Players.One;

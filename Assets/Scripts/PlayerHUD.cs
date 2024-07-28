@@ -39,7 +39,6 @@ public class PlayerHUD : MonoBehaviour {
         ability.text = remainingUsage.ToString();
 
         if (remainingUsage <= 0) {
-            Debug.LogWarning("OUT OF USES!");
             ability.color = Color.red;
         }
     }

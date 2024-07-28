@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 public interface IResetAble {
@@ -7,6 +6,7 @@ public interface IResetAble {
 
 public class GameManager : MonoBehaviour {
     [HideInInspector] public static GameManager Instance { get; set; }
+    static AudioSource s_victorySound;
 
     static public readonly int ROUNDS_PER_GAME = 3;
     static public readonly int NUM_PLAYERS = 2;
@@ -19,8 +19,7 @@ public class GameManager : MonoBehaviour {
     //[HideInInspector] public static int CurrentRound { get; set; } = 0;
     [HideInInspector] public static bool IsPaused { get; set; }
     [HideInInspector] public static bool IsRecentlyLoaded { get; set; }
-    static bool s_r;
-    [HideInInspector] public static bool IsResumeAble { get => s_r; set { Debug.Log("Set IsResumeAble " + value); s_r = value; } }
+    [HideInInspector] public static bool IsResumeAble { get; set; }
     [HideInInspector] public static bool IsPlayerControllable { get; private set; }
     [HideInInspector]
     public static bool IsGameOver {
@@ -40,8 +39,6 @@ public class GameManager : MonoBehaviour {
 
 
     void Start() {
-        Debug.Log("Starting Game Manager!");
-
         if (Instance == null) {
             Instance = this;
         }
@@ -49,12 +46,12 @@ public class GameManager : MonoBehaviour {
 
         DontDestroyOnLoad(gameObject);
 
-        IsResumeAble = true;
+        if(SceneLoader.IsInGameWorld)
+            IsResumeAble = true;
     }
 
     void Update() {
         if (IsRecentlyLoaded) {
-            Debug.Log("Recently Loaded!");
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 IsRecentlyLoaded = false;
                 RoundStart.EnableUI(false);
@@ -63,13 +60,11 @@ public class GameManager : MonoBehaviour {
             }
         }
 
-        else if (Input.GetKeyDown(KeyCode.Escape) && IsResumeAble) {
+        else if (IsResumeAble && Input.GetKeyDown(KeyCode.Escape)) {
             if (!IsPaused) {
-                Debug.Log("Paused!");
                 PauseGameUI();
             }
             else {
-                Debug.Log("Unpaused!");
                 ResumeGameUI();
             }
         }
@@ -78,8 +73,6 @@ public class GameManager : MonoBehaviour {
 
     public static void StartGame() {
         // Reset Rounds
-        Debug.Log("Starting Game!");
-
         PlayerWins[0] = 0;
         PlayerWins[1] = 0;
         Instance.m_players = new IResetAble[PlayerWins.Length];
@@ -123,7 +116,6 @@ public class GameManager : MonoBehaviour {
     }
 
     public static void QuitGame() {
-        Debug.Log("Quiting Game!");
         Destroy(Instance);
         Application.Quit();
     }
@@ -198,6 +190,12 @@ public class GameManager : MonoBehaviour {
             winner = Players.Two;
 
         ColorPlayer(winner);
+
+        // Play Victory Sound
+        if(s_victorySound == null) {
+            s_victorySound = GameObject.Find("Players").GetComponent<AudioSource>();
+        }
+        s_victorySound.Play();
 
         // Load the winner declaration UI
         EndGame.DeclareWinner(winner);

@@ -23,7 +23,6 @@ public class RoundEnd : MonoBehaviour {
         Button nextRoundButton = m_nextRoundButton.GetComponent<Button>();
 
         nextRoundButton.onClick.AddListener(() => {
-            Debug.Log("Resetting!");
             GameManager.ResetRound();
             EnableUI(false);
         });
@@ -39,7 +38,6 @@ public class RoundEnd : MonoBehaviour {
 
 
     public static void DeclareWinner(GameManager.Players winner) {
-        Debug.Log("Declaring Winner!");
         GameManager.PauseGame();
         EnableUI();
 

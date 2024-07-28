@@ -22,7 +22,6 @@ public class PauseMenu : MonoBehaviour {
         s_resumeButton = GameObject.Find("ResumeButton");
         Button resumeButton = s_resumeButton.GetComponentInChildren<Button>();
         resumeButton.onClick.AddListener(() => {
-            Debug.Log("Clicked Resume");
             ButtonFunctions.Resume();
         });
 

@@ -51,10 +51,6 @@ public class Player : MonoBehaviour, IResetAble {
         }
     }
 
-    void OnDestroy() {
-        Debug.Log("Destroyed!");
-    }
-
 
     public void Reset() {
         if (PlayerID == GameManager.Players.One) {
@@ -71,13 +67,11 @@ public class Player : MonoBehaviour, IResetAble {
     void HandleAbilityInput() {
         if (PlayerID == GameManager.Players.One) {
             if (Input.GetKeyDown(KeyCode.D)) {
-                Debug.Log("Ability Called by One");
                 m_warpAbility.Use();
             }
         }
         else if (PlayerID == GameManager.Players.Two) {
             if (Input.GetKeyDown(KeyCode.RightShift)) {
-                Debug.Log("Ability Called by Two");
                 m_warpAbility.Use();
             }
         }
