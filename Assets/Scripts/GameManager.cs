@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour {
     [HideInInspector] public static bool IsRecentlyLoaded { get; set; }
     [HideInInspector] public static bool IsResumeAble { get; set; }
     [HideInInspector] public static bool IsPlayerControllable { get; private set; }
+    [HideInInspector] public static bool IsFirstGame {  get; private set; } = true;
     [HideInInspector]
     public static bool IsGameOver {
         get {
@@ -55,6 +56,12 @@ public class GameManager : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.Escape)) {
                 IsRecentlyLoaded = false;
                 RoundStart.EnableUI(false);
+                Debug.Log("Is First game = " + IsFirstGame);
+                if (IsFirstGame) {
+                    IsFirstGame = false;
+                    ControlUI.EnableUI(false);
+                }
+
                 ResumeGame();
                 return;
             }
@@ -79,8 +86,8 @@ public class GameManager : MonoBehaviour {
 
         SceneLoader.LoadScene(SceneLoader.Scenes.Game_World);
 
-        IsPlayerControllable = false;
         IsRecentlyLoaded = true;
+        IsPlayerControllable = false;
 
         PauseGame();
     }

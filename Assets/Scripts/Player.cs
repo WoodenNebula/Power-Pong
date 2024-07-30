@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour, IResetAble {
@@ -60,18 +59,18 @@ public class Player : MonoBehaviour, IResetAble {
             transform.position = new Vector3(20.0f, 0.0f, 0.0f);
         }
 
-        gameObject.GetComponent<SpriteRenderer>().color = new Color(82/255.0f, 255/255.0f, 0/255.0f);
+        gameObject.GetComponent<SpriteRenderer>().color = new Color(82 / 255.0f, 255 / 255.0f, 0 / 255.0f);
     }
 
 
     void HandleAbilityInput() {
         if (PlayerID == GameManager.Players.One) {
-            if (Input.GetKeyDown(KeyCode.D)) {
+            if (Input.GetKeyDown(KeyCode.Space)) {
                 m_warpAbility.Use();
             }
         }
         else if (PlayerID == GameManager.Players.Two) {
-            if (Input.GetKeyDown(KeyCode.RightShift)) {
+            if (Input.GetKeyDown(KeyCode.LeftArrow)) {
                 m_warpAbility.Use();
             }
         }

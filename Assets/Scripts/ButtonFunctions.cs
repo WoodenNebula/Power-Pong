@@ -1,14 +1,13 @@
 using UnityEngine;
 
-public class ButtonFunctions : MonoBehaviour
-{
+public class ButtonFunctions : MonoBehaviour {
     public static ButtonFunctions Instance;
     AudioSource m_audioSource;
 
     void Awake() {
-        if(Instance == null)
+        if (Instance == null)
             Instance = this;
-        else 
+        else
             Destroy(gameObject);
 
         m_audioSource = gameObject.GetComponent<AudioSource>();
@@ -44,7 +43,7 @@ public class ButtonFunctions : MonoBehaviour
         GameManager.StartGame();
     }
 
-    public static void ExitToMenu() { 
+    public static void ExitToMenu() {
         PlayAudio();
         GameManager.ExitToMenu();
     }
