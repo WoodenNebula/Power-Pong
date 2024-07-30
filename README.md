@@ -1,6 +1,15 @@
 # Power-Pong
 Pong clone made in Unity Game Engine as learning Unity
 
+![Power-Pong Splash](<Assets/Images/Power Pong Splash.png>)
+
+## Installation
+Steps:
+- Download the [Power-Pong.Setup.exe](https://github.com/WoodenNebula/Power-Pong/releases/latest/Power-Pong.Setup.exe) file from [Releases](https://github.com/WoodenNebula/Power-Pong/releases/latest)
+
+- Follow the installer
+
+
 ## Building
 Steps:
 - Clone the repo locally
