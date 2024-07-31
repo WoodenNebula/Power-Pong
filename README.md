@@ -5,7 +5,7 @@ Pong clone made in Unity Game Engine as learning Unity
 
 ## Installation
 Steps:
-- Download the [Power-Pong.Setup.exe](https://github.com/WoodenNebula/Power-Pong/releases/latest/Power-Pong.Setup.exe) file from [Releases](https://github.com/WoodenNebula/Power-Pong/releases/latest)
+- Download the [Power-Pong.Setup.exe](https://github.com/WoodenNebula/Power-Pong/releases/download/v1.0/Power-Pong.Setup.exe) file from [Releases](https://github.com/WoodenNebula/Power-Pong/releases/latest)
 
 - Follow the installer
 
